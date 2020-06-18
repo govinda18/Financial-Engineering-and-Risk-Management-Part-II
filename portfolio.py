@@ -113,6 +113,56 @@ class MeanVarPortfolio(object):
 
         return weights.x
 
+    def get_cml(self, riskfree_rate=0.0):
+        """
+        Returns the parameters of the capital market line.
+
+        Parameters:
+        ----------
+        riskfree_rate (float): The riskfree_rate of the market
+
+        Returns:
+        -------
+
+        tuple - Returns a tuple of (slope, y_intercept) of the CML.
+                The y_intercept would be equal to the riskfree_rate.
+        """
+
+        wt_msr = self.msr(riskfree_rate=riskfree_rate)
+        ret, vol = self.get_point(wt_msr)
+
+        slope = (ret - riskfree_rate) / vol
+        y_intercept = riskfree_rate
+
+        return (slope, y_intercept)
+
+    def max_return_cml(self, vol, riskfree_rate=0.0):
+        """
+        The maximum return earned by the captial market line model
+        for the given volatility.
+
+        Parameters:
+        ----------
+
+        vol (float): The volatility corresponding to which the maximum return 
+                        has to be evaluated.
+
+        riskfree_rate (float): The risk free rate of the market
+
+        Returns:
+        -------
+
+        float: The return of capital market line corresponding to the given volatility.
+        """
+
+        slope, intercept = self.get_cml(riskfree_rate)
+        sigma = 0.05
+
+        exp_ret = slope * sigma + intercept
+
+        return exp_ret
+
+
     def get_ef_weights(self, n_points):
         """
         Returns a set of optimal weights for n_points equally spaced 
@@ -330,4 +380,3 @@ class MeanVarPortfolio(object):
             )
 
         return ax
-        
